@@ -8,12 +8,12 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
-compose-bom = "2026.02.01"
+compose-bom = "2026.09.00"
 activity-compose = "1.8.2"
 lifecycle-runtime-ktx = "2.7.0"
-uiGraphicsAndroid = "1.10.4"
+uiGraphicsAndroid = "1.12.1"
 coreKtxVersion = "1.12.0"
-runtimeAndroid = "1.10.4"
+runtimeAndroid = "1.12.1"
 desugar = "2.0.4"
 mlkit-text = "16.0.0"
 zxing = "3.5.3"
@@ -30,7 +30,7 @@ androidsvg = "1.4"
 android-gif = "1.2.28"
 image-cropper = "4.5.0"
 exoplayer = "2.19.1"
-material3-window = "1.2.0"
+material3-window = "1.12.0-alpha03"
 window = "1.1.0"
 webkit = "1.12.1"
 itextg = "5.5.10"
@@ -73,13 +73,13 @@ swipe = "1.2.0"
 objectbox = "5.3.0"
 mediapipe = "0.10.11"
 work = "2.9.0"
-uiTextAndroid = "1.10.4"
-animationAndroid = "1.10.4"
-uiAndroid = "1.10.4"
+uiTextAndroid = "1.12.1"
+animationAndroid = "1.12.1"
+uiAndroid = "1.12.1"
 glance = "1.0.0"
 activityKtx = "1.7.1"
- ui = "1.10.4"
- animation = "1.10.4"
+ ui = "1.12.1"
+ animation = "1.12.1"
 
  [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -148,7 +148,8 @@ exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-cor
 exoplayer-ui = { group = "com.google.android.exoplayer", name = "exoplayer-ui", version.ref = "exoplayer" }
 
 # UI components
-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3-window" }
+# Material 3 Window Size Class —— 与 miuix 同链路的 JetBrains 坐标（包名相同，调用零改动）
+material3-window = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "material3-window" }
 window = { group = "androidx.window", name = "window", version.ref = "window" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 
