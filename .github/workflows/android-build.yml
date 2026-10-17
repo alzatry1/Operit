@@ -14,7 +14,7 @@ on:
           - ':app:assembleClone'
           - ':app:bundleRelease'
   push:
-    branches: [main]
+    branches: [feature/miuix-migration]
     paths:
       - .github/workflows/android-build.yml
       - .gitmodules
@@ -215,11 +215,15 @@ jobs:
           chmod +x ./gradlew
           ./gradlew "$gradle_task" --stacktrace --no-daemon
 
+      - name: Compute short SHA
+        shell: bash
+        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> "$GITHUB_ENV"
+
       - name: Upload Android reports
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: operit-android-reports-${{ github.run_number }}
+          name: operit-android-reports-r${{ github.run_number }}-${{ env.SHORT_SHA }}
           path: |
             app/build/reports/**
             build/reports/**
@@ -230,7 +234,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: operit-android-${{ github.run_number }}
+          name: operit-android-r${{ github.run_number }}-${{ env.SHORT_SHA }}
           path: |
             app/build/outputs/apk/**/*.apk
             app/build/outputs/bundle/**/*.aab
