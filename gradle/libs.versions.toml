@@ -187,6 +187,10 @@ mediapipe-tasks-text = { group = "com.google.mediapipe", name = "tasks-text", ve
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+# kapt 处理器类路径钉版：Room 的 room-compiler-processing 只声明 kotlin-metadata-jvm 2.2.0，
+# 读不动 Kotlin 2.4 输出的元数据 2.4.0（报 maximum supported version is 2.3.0）；
+# 不显式钉住与编译器同版本会在 Room/ObjectBox 注解处理阶段直接失败。
+kotlin-metadata-jvm = { group = "org.jetbrains.kotlin", name = "kotlin-metadata-jvm", version.ref = "kotlin" }
 
 # Archive
 commons-compress-v2 = { group = "org.apache.commons", name = "commons-compress", version.ref = "commons-compress-v2" }

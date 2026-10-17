@@ -710,6 +710,9 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx) // Kotlin扩展和协程支持
     kapt(libs.room.compiler) // 使用kapt代替ksp
+    // kapt 类路径钉版：让 Room/ObjectBox 处理器读到与 Kotlin 编译器同版本的元数据库，
+    // 否则 Kotlin 2.4 输出的元数据 2.4.0 会超出 Room 自带 2.2.0 元数据库的读取上限
+    kapt(libs.kotlin.metadata.jvm)
 
     // ObjectBox
     implementation(libs.objectbox.kotlin)
