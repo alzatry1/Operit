@@ -94,6 +94,22 @@ fun loadApkRotationSigningConfig(): ApkRotationSigningConfig {
     )
 }
 
+// Gradle 9 已移除 Project.exec：改用 ProcessBuilder 直跑进程（无 Gradle API 耦合）。
+// 失败时携带完整输出抛出，保证 CI 日志可见签名失败原因。
+fun runCheckedProcess(command: List<String>, env: Map<String, String>) {
+    val processBuilder = ProcessBuilder(command).redirectErrorStream(true)
+    processBuilder.environment().putAll(env)
+    val process = processBuilder.start()
+    val output = process.inputStream.bufferedReader().readText()
+    val exitCode = process.waitFor()
+    if (output.isNotBlank()) {
+        println(output)
+    }
+    require(exitCode == 0) {
+        "Process failed with exit code $exitCode: ${command.joinToString(" ")}"
+    }
+}
+
 fun signApkWithRotation(apkFile: File) {
     require(apkFile.isFile) { "APK to sign was not produced: ${apkFile.path}" }
     val config = loadApkRotationSigningConfig()
@@ -128,17 +144,20 @@ fun signApkWithRotation(apkFile: File) {
         "--key-pass", "env:OPERIT_NEW_KEY_PASSWORD",
     )
 
-    project.exec {
-        commandLine(listOf(config.apksigner.path) + signingArguments)
-        environment("OPERIT_OLD_STORE_PASSWORD", config.oldStorePassword)
-        environment("OPERIT_OLD_KEY_PASSWORD", config.oldKeyPassword)
-        environment("OPERIT_NEW_STORE_PASSWORD", config.newStorePassword)
-        environment("OPERIT_NEW_KEY_PASSWORD", config.newKeyPassword)
-    }
+    runCheckedProcess(
+        listOf(config.apksigner.path) + signingArguments,
+        mapOf(
+            "OPERIT_OLD_STORE_PASSWORD" to config.oldStorePassword,
+            "OPERIT_OLD_KEY_PASSWORD" to config.oldKeyPassword,
+            "OPERIT_NEW_STORE_PASSWORD" to config.newStorePassword,
+            "OPERIT_NEW_KEY_PASSWORD" to config.newKeyPassword,
+        ),
+    )
 
-    project.exec {
-        commandLine(config.apksigner.path, "verify", "--verbose", "--print-certs", rotatedApk.path)
-    }
+    runCheckedProcess(
+        listOf(config.apksigner.path, "verify", "--verbose", "--print-certs", rotatedApk.path),
+        emptyMap(),
+    )
 
     Files.move(
         rotatedApk.toPath(),
