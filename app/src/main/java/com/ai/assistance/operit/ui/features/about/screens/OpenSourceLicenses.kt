@@ -44,7 +44,6 @@ private fun getOpenSourceLibraries(): List<OpenSourceLibrary> {
         OpenSourceLibrary("AndroidX Window", "Window manager library for foldables", "Apache-2.0", "https://developer.android.com/jetpack/androidx/releases/window"),
         OpenSourceLibrary("AndroidX WorkManager", "Background job scheduling library", "Apache-2.0", "https://developer.android.com/jetpack/androidx/releases/work"),
         OpenSourceLibrary("AndroidX Glance", "Compose for App Widgets", "Apache-2.0", "https://developer.android.com/jetpack/androidx/releases/glance"),
-        OpenSourceLibrary("Accompanist", "Utilities for Jetpack Compose", "Apache-2.0", "https://github.com/google/accompanist"),
         OpenSourceLibrary("colorpicker-compose", "A color picker for Jetpack Compose", "Apache-2.0", "https://github.com/skydoves/colorpicker-compose"),
         OpenSourceLibrary("Reorderable", "Drag-and-drop reorderable list for Compose", "Apache-2.0", "https://github.com/Calvin-LL/Reorderable"),
         OpenSourceLibrary("Swipe", "Swipe-to-reveal actions for Compose", "Apache-2.0", "https://github.com/saket/swipe"),

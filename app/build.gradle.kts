@@ -12,13 +12,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    // AGP 9 内置 Kotlin：不再 apply org.jetbrains.kotlin.android（与内置 Kotlin 的 kotlin 扩展冲突）
+    // kapt 由 AGP 同版本 legacy-kapt 插件承接（Room/ObjectBox 注解处理仍走 kapt 配置）
+    alias(libs.plugins.android.legacy.kapt)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     id("io.objectbox")
-    id("kotlin-kapt")
 }
 
 val localProperties = Properties()
@@ -358,7 +358,7 @@ val syncMainAssets by tasks.registering(Sync::class) {
 
 android {
     namespace = "com.ai.assistance.operit"
-    compileSdk = 36
+    compileSdk = 37
 
     sourceSets {
         getByName("main") {
@@ -458,20 +458,6 @@ android {
             }
             matchingFallbacks += listOf("release")
             signingConfig = signingConfigs.getByName("debug")
-        }
-    }
-    applicationVariants.all {
-        if (buildType.name == "nightly") {
-            outputs.all {
-                val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                output.outputFileName = "app-nightly.apk"
-            }
-        }
-        if (buildType.name == "clone") {
-            outputs.all {
-                val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                output.outputFileName = "app-clone.apk"
-            }
         }
     }
     compileOptions {
@@ -838,9 +824,6 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
     implementation(libs.okhttp.logging.interceptor)
 
-
-    // Accompanist
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
     // Glance for Widgets (Compose for Widgets)
     implementation(libs.glance.appwidget)

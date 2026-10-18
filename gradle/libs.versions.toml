@@ -1,5 +1,5 @@
  [versions]
-agp = "8.13.2"
+agp = "9.4.1"
 kotlin = "2.4.21"
 kotlin-serialization = "2.4.21"
 coreKtx = "1.18.0"
@@ -70,7 +70,7 @@ mockito = "5.2.0"
 mockito-kotlin = "5.1.0"
 reorderable = "2.5.1"
 swipe = "1.2.0"
-objectbox = "5.3.0"
+objectbox = "5.4.2"
 mediapipe = "0.10.11"
 work = "2.9.0"
 uiTextAndroid = "1.12.1"
@@ -267,9 +267,9 @@ glance-material3 = { group = "androidx.glance", name = "glance-material3", versi
  [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# AGP 9 内置 Kotlin：kapt 由 AGP 同版本的 legacy-kapt 插件承接（版本与 AGP 一致）
+android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-serialization" }
 objectbox = { id = "io.objectbox", version.ref = "objectbox" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
