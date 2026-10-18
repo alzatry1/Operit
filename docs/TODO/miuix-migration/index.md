@@ -43,3 +43,4 @@ status: in_progress
 - 详细方案见工作区《Operit×Miuix集成方案.md》（5094 行）。
 
 - [DONE] 01 CI 准备
+- [DONE] 02 工具链升级
