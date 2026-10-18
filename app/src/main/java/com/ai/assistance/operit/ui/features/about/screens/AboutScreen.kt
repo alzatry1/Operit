@@ -19,13 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -36,8 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.ai.assistance.operit.R
 import com.ai.assistance.operit.data.updates.FullUpdateInstaller
 import com.ai.assistance.operit.data.updates.UpdateManager
@@ -53,9 +47,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.ai.assistance.operit.ui.components.CustomScaffold
+import com.ai.assistance.operit.ui.miuixbridge.OperitDialog
+import com.ai.assistance.operit.ui.miuixbridge.OperitSettingsGroup
+import com.ai.assistance.operit.ui.miuixbridge.OperitSettingsRow
+import com.ai.assistance.operit.ui.miuixbridge.OperitSettingsSwitchRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
+import top.yukonga.miuix.kmp.basic.HorizontalDivider
+import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.LinearProgressIndicator
+import top.yukonga.miuix.kmp.basic.Surface
+import top.yukonga.miuix.kmp.basic.Text
+import top.yukonga.miuix.kmp.basic.TextButton
+import top.yukonga.miuix.kmp.theme.MiuixTheme
+import top.yukonga.miuix.kmp.window.WindowDialog
 import java.util.Locale
 
 private const val GITHUB_PROJECT_URL = "https://github.com/AAswordman/Operit"
@@ -107,7 +114,7 @@ private data class FullUpdateDialogState(
 fun HtmlText(
     html: String,
     modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium
+    style: androidx.compose.ui.text.TextStyle = MiuixTheme.textStyles.body1
 ) {
     val context = LocalContext.current
     val textColor = style.color.toArgb()
@@ -365,99 +372,21 @@ fun InfoItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = MiuixTheme.colorScheme.onSurfaceVariantSummary,
             modifier = Modifier.padding(end = 16.dp, top = 2.dp)
         )
         Column {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MiuixTheme.textStyles.subtitle,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MiuixTheme.colorScheme.onSurface
             )
             Box(modifier = Modifier.padding(top = 4.dp)) { content() }
         }
     }
 }
 
-@Composable
-private fun SettingsGroup(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        tonalElevation = 0.dp,
-        shadowElevation = 0.dp
-    ) {
-        Column(modifier = Modifier.fillMaxWidth(), content = content)
-    }
-}
-
-@Composable
-private fun SettingsRow(
-    icon: ImageVector,
-    iconTint: Color,
-    title: String,
-    subtitleText: String? = null,
-    subtitleContent: (@Composable () -> Unit)? = null,
-    trailing: (@Composable () -> Unit)? = null,
-    onClick: (() -> Unit)? = null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Surface(
-            modifier = Modifier.size(38.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = iconTint.copy(alpha = 0.16f),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            if (subtitleContent != null) {
-                Box(modifier = Modifier.padding(top = 2.dp)) { subtitleContent() }
-            } else if (!subtitleText.isNullOrBlank()) {
-                Text(
-                    text = subtitleText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        if (trailing != null) {
-            trailing()
-        } else if (onClick != null) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
     navigateToUpdateHistory: () -> Unit
@@ -844,7 +773,7 @@ fun AboutScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MiuixTheme.colorScheme.background)
                 .padding(innerPadding),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -859,8 +788,7 @@ fun AboutScreen(
                     Surface(
                         modifier = Modifier.size(80.dp),
                         shape = CircleShape,
-                        tonalElevation = 1.dp,
-                        color = MaterialTheme.colorScheme.surfaceVariant
+                        color = MiuixTheme.colorScheme.surfaceVariant
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Image(
@@ -875,13 +803,13 @@ fun AboutScreen(
 
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MiuixTheme.textStyles.title4,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = stringResource(id = R.string.about_version, appVersion),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MiuixTheme.textStyles.body2,
+                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
@@ -897,23 +825,17 @@ fun AboutScreen(
                     else -> null
                 }
 
-                SettingsGroup {
-                    SettingsRow(
+                OperitSettingsGroup {
+                    OperitSettingsRow(
                         icon = Icons.Default.Update,
-                        iconTint = MaterialTheme.colorScheme.primary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.check_for_updates),
-                        subtitleText = updateSubtitle,
-                        trailing = {
+                        subtitle = updateSubtitle,
+                        endActions = {
                             if (updateStatus is UpdateStatus.Checking) {
                                 CircularProgressIndicator(
                                     strokeWidth = 2.dp,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    size = 18.dp
                                 )
                             }
                         },
@@ -931,30 +853,26 @@ fun AboutScreen(
 
                     HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
 
-                    SettingsRow(
+                    OperitSettingsSwitchRow(
                         icon = Icons.Default.NewReleases,
-                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        iconTint = MiuixTheme.colorScheme.onTertiaryContainer,
                         title = stringResource(id = R.string.beta_plan),
-                        subtitleText = stringResource(id = R.string.beta_plan_desc),
-                        trailing = {
-                            Switch(
-                                checked = betaEnabled,
-                                onCheckedChange = { enabled ->
-                                    scope.launch { preferences.saveBetaPlanEnabled(enabled) }
-                                }
-                            )
+                        subtitle = stringResource(id = R.string.beta_plan_desc),
+                        checked = betaEnabled,
+                        onCheckedChange = { enabled ->
+                            scope.launch { preferences.saveBetaPlanEnabled(enabled) }
                         }
                     )
                 }
             }
 
             item {
-                SettingsGroup {
-                    SettingsRow(
+                OperitSettingsGroup {
+                    OperitSettingsRow(
                         icon = Icons.Default.Language,
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.project_url),
-                        subtitleText = GITHUB_PROJECT_URL,
+                        subtitle = GITHUB_PROJECT_URL,
                         onClick = {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_PROJECT_URL)).apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -965,9 +883,9 @@ fun AboutScreen(
 
                     HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
 
-                    SettingsRow(
+                    OperitSettingsRow(
                         icon = Icons.Default.Star,
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.star_on_github),
                         onClick = {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_PROJECT_URL)).apply {
@@ -979,18 +897,18 @@ fun AboutScreen(
 
                     HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
 
-                    SettingsRow(
+                    OperitSettingsRow(
                         icon = Icons.Default.History,
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(R.string.update_log),
                         onClick = { navigateToUpdateHistory() }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
 
-                    SettingsRow(
+                    OperitSettingsRow(
                         icon = Icons.Default.Source,
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.open_source_licenses),
                         onClick = { showLicenseDialog = true }
                     )
@@ -998,25 +916,25 @@ fun AboutScreen(
             }
 
             item {
-                SettingsGroup {
-                    SettingsRow(
+                OperitSettingsGroup {
+                    OperitSettingsRow(
                         icon = Icons.Default.Email,
-                        iconTint = MaterialTheme.colorScheme.primary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.contact),
-                        subtitleText = stringResource(id = R.string.about_contact)
+                        subtitle = stringResource(id = R.string.about_contact)
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
 
-                    SettingsRow(
+                    OperitSettingsRow(
                         icon = Icons.Default.Person,
-                        iconTint = MaterialTheme.colorScheme.primary,
+                        iconTint = MiuixTheme.colorScheme.primary,
                         title = stringResource(id = R.string.developer),
-                        subtitleContent = {
+                        bottomAction = {
                             HtmlText(
                                 html = stringResource(id = R.string.about_developer),
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MiuixTheme.textStyles.body2.copy(
+                                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                                 )
                             )
                         }
@@ -1027,8 +945,8 @@ fun AboutScreen(
             item {
                 Text(
                     text = stringResource(id = R.string.about_copyright),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MiuixTheme.textStyles.body2,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1039,7 +957,6 @@ fun AboutScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateDialog(
     updateStatus: UpdateStatus,
@@ -1047,91 +964,67 @@ fun UpdateDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = {
-            val icon = when (updateStatus) {
-                is UpdateStatus.Available -> Icons.Default.Update
-                is UpdateStatus.PatchAvailable -> Icons.Default.Update
-                is UpdateStatus.Checking -> Icons.Default.Download
-                is UpdateStatus.UpToDate -> Icons.Default.CheckCircle
-                is UpdateStatus.Error -> Icons.Default.Error
-                else -> Icons.Default.Update
-            }
-            Icon(icon, contentDescription = null)
+    val titleText = when (updateStatus) {
+        is UpdateStatus.Available -> stringResource(id = R.string.new_version_found)
+        is UpdateStatus.PatchAvailable -> stringResource(id = R.string.new_version_found)
+        is UpdateStatus.Checking -> stringResource(id = R.string.checking_updates)
+        is UpdateStatus.UpToDate -> stringResource(id = R.string.check_complete)
+        is UpdateStatus.Error -> stringResource(id = R.string.check_failed)
+        else -> stringResource(id = R.string.update_check)
+    }
+    OperitDialog(
+        show = true,
+        title = titleText,
+        onDismiss = onDismiss,
+        confirmText = when (updateStatus) {
+            is UpdateStatus.Available -> stringResource(id = R.string.download)
+            is UpdateStatus.PatchAvailable -> stringResource(id = R.string.patch_update)
+            else -> stringResource(id = R.string.ok)
         },
-        title = {
-            val titleText = when (updateStatus) {
-                is UpdateStatus.Available -> stringResource(id = R.string.new_version_found)
-                is UpdateStatus.PatchAvailable -> stringResource(id = R.string.new_version_found)
-                is UpdateStatus.Checking -> stringResource(id = R.string.checking_updates)
-                is UpdateStatus.UpToDate -> stringResource(id = R.string.check_complete)
-                is UpdateStatus.Error -> stringResource(id = R.string.check_failed)
-                else -> stringResource(id = R.string.update_check)
-            }
-            Text(text = titleText)
-        },
-        text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                when (val status = updateStatus) {
-                    is UpdateStatus.Available -> {
+        onConfirm = onConfirm,
+        confirmEnabled = updateStatus !is UpdateStatus.Checking,
+        dismissText = if (updateStatus !is UpdateStatus.Checking) stringResource(id = R.string.close) else null,
+    ) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            when (val status = updateStatus) {
+                is UpdateStatus.Available -> {
+                    Text(
+                        text = "$appVersion -> ${status.newVersion}",
+                        style = MiuixTheme.textStyles.body1,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    if (status.releaseNotes.isNotEmpty() && !status.newVersion.contains("+")) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text(
-                            text = "$appVersion -> ${status.newVersion}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            stringResource(id = R.string.update_content),
+                            style = MiuixTheme.textStyles.subtitle,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
-                        if (status.releaseNotes.isNotEmpty() && !status.newVersion.contains("+")) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                            Text(
-                                stringResource(id = R.string.update_content),
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(status.releaseNotes, style = MaterialTheme.typography.bodySmall)
-                        }
+                        Text(status.releaseNotes, style = MiuixTheme.textStyles.body2)
                     }
-                    is UpdateStatus.PatchAvailable -> {
-                        Text(
-                            text = "$appVersion -> ${status.newVersion}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-                    is UpdateStatus.UpToDate -> {
-                        Text(stringResource(id = R.string.already_latest_version, appVersion))
-                    }
-                    is UpdateStatus.Error -> {
-                        Text(status.message)
-                    }
-                    else -> {
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                            CircularProgressIndicator()
-                        }
+                }
+                is UpdateStatus.PatchAvailable -> {
+                    Text(
+                        text = "$appVersion -> ${status.newVersion}",
+                        style = MiuixTheme.textStyles.body1,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                is UpdateStatus.UpToDate -> {
+                    Text(stringResource(id = R.string.already_latest_version, appVersion))
+                }
+                is UpdateStatus.Error -> {
+                    Text(status.message)
+                }
+                else -> {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        CircularProgressIndicator()
                     }
                 }
             }
-        },
-        confirmButton = {
-            Button(
-                onClick = onConfirm,
-                enabled = updateStatus !is UpdateStatus.Checking
-            ) {
-                Text(
-                    when (updateStatus) {
-                        is UpdateStatus.Available -> stringResource(id = R.string.download)
-                        is UpdateStatus.PatchAvailable -> stringResource(id = R.string.patch_update)
-                        else -> stringResource(id = R.string.ok)
-                    }
-                )
-            }
-        },
-        dismissButton = {
-            if (updateStatus !is UpdateStatus.Checking) {
-                TextButton(onClick = onDismiss) { Text(stringResource(id = R.string.close)) }
-            }
         }
-    )
+    }
 }
 
 @Composable
@@ -1142,31 +1035,20 @@ private fun PatchUpdateProgressDialog(
     val isError = state.phase == PatchUpdatePhase.ERROR
     val showCancel = !isError
 
-    Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
+    // onDismissRequest = null：进度期间不可取消关闭（对齐原 Dialog 的 dismissOnBackPress=false 语义）
+    WindowDialog(
+        show = true,
+        title = stringResource(id = R.string.patch_update),
+        onDismissRequest = null,
     ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            tonalElevation = 6.dp,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.patch_update),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
                 Text(
                     text = state.message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MiuixTheme.textStyles.body1,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                 )
 
                 when (state.phase) {
@@ -1178,8 +1060,8 @@ private fun PatchUpdateProgressDialog(
                                     state.mirrorCompleted,
                                     state.mirrorTotal
                                 ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MiuixTheme.textStyles.body2,
+                                color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
                         }
                         if (state.selectedMirror != null) {
@@ -1188,8 +1070,8 @@ private fun PatchUpdateProgressDialog(
                                     id = R.string.patch_update_selected_short,
                                     state.selectedMirror
                                 ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
+                                style = MiuixTheme.textStyles.body2,
+                                color = MiuixTheme.colorScheme.primary
                             )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1217,19 +1099,19 @@ private fun PatchUpdateProgressDialog(
                                 ) {
                                     Text(
                                         text = name,
-                                        style = MaterialTheme.typography.bodySmall,
+                                        style = MiuixTheme.textStyles.body2,
                                         fontWeight = FontWeight.Medium
                                     )
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text(
                                             text = statusText,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = if (summary.ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                            style = MiuixTheme.textStyles.body2,
+                                            color = if (summary.ok) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.error
                                         )
                                         Text(
                                             text = detail,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            style = MiuixTheme.textStyles.body2,
+                                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                                         )
                                     }
                                 }
@@ -1258,8 +1140,8 @@ private fun PatchUpdateProgressDialog(
                             }
                         Text(
                             text = "$sizeText · ${formatSpeed(state.speedBytesPerSec)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
 
@@ -1283,15 +1165,15 @@ private fun PatchUpdateProgressDialog(
                                     state.chainScanCompleted,
                                     state.chainScanTotal
                                 ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MiuixTheme.textStyles.body2,
+                                color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
                         } else {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                                CircularProgressIndicator(size = 20.dp, strokeWidth = 2.dp)
                                 Text(
                                     text =
                                         if (state.phase == PatchUpdatePhase.READY_TO_INSTALL) {
@@ -1299,8 +1181,8 @@ private fun PatchUpdateProgressDialog(
                                         } else {
                                             stringResource(id = R.string.processing)
                                         },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = MiuixTheme.textStyles.body2,
+                                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                                 )
                             }
                         }
@@ -1309,8 +1191,8 @@ private fun PatchUpdateProgressDialog(
                     PatchUpdatePhase.ERROR -> {
                         Text(
                             text = state.errorMessage ?: stringResource(id = R.string.unknown_error),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.error
                         )
                     }
                 }
@@ -1320,79 +1202,68 @@ private fun PatchUpdateProgressDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     if (showCancel) {
-                        TextButton(onClick = onCancel) {
-                            Text(stringResource(id = R.string.cancel))
-                        }
+                        TextButton(text = stringResource(id = R.string.cancel), onClick = onCancel)
                     } else if (isError) {
-                        TextButton(onClick = onCancel) {
-                            Text(stringResource(id = R.string.close))
-                        }
+                        TextButton(text = stringResource(id = R.string.close), onClick = onCancel)
                     }
                 }
             }
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FullUpdateMethodDialog(
     onDismiss: () -> Unit,
     onBrowser: () -> Unit,
     onInApp: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(id = R.string.select_update_method)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    OperitDialog(
+        show = true,
+        title = stringResource(id = R.string.select_update_method),
+        onDismiss = onDismiss,
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
                     text = stringResource(id = R.string.select_update_method_desc),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MiuixTheme.textStyles.body1
                 )
                 Surface(
                     modifier = Modifier.fillMaxWidth().clickable { onInApp() },
                     shape = RoundedCornerShape(10.dp),
-                    tonalElevation = 1.dp,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                    color = MiuixTheme.colorScheme.surfaceContainer
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = stringResource(id = R.string.update_in_app),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MiuixTheme.textStyles.subtitle,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = stringResource(id = R.string.update_in_app_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
                 }
                 Surface(
                     modifier = Modifier.fillMaxWidth().clickable { onBrowser() },
                     shape = RoundedCornerShape(10.dp),
-                    tonalElevation = 1.dp,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                    color = MiuixTheme.colorScheme.surfaceContainer
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = stringResource(id = R.string.update_via_browser),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MiuixTheme.textStyles.subtitle,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = stringResource(id = R.string.update_via_browser_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = {}
-    )
+    }
 }
 
 @Composable
@@ -1403,31 +1274,19 @@ private fun FullUpdateProgressDialog(
     val isError = state.phase == FullUpdatePhase.ERROR
     val showCancel = !isError
 
-    Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
+    WindowDialog(
+        show = true,
+        title = stringResource(id = R.string.full_update),
+        onDismissRequest = null,
     ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            tonalElevation = 6.dp,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.full_update),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
                 Text(
                     text = state.message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MiuixTheme.textStyles.body1,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                 )
 
                 when (state.phase) {
@@ -1448,8 +1307,8 @@ private fun FullUpdateProgressDialog(
                             }
                         Text(
                             text = "$sizeText · ${formatSpeed(state.speedBytesPerSec)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
 
@@ -1458,11 +1317,11 @@ private fun FullUpdateProgressDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                            CircularProgressIndicator(size = 20.dp, strokeWidth = 2.dp)
                             Text(
                                 text = state.message,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MiuixTheme.textStyles.body2,
+                                color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
                         }
                     }
@@ -1470,8 +1329,8 @@ private fun FullUpdateProgressDialog(
                     FullUpdatePhase.ERROR -> {
                         Text(
                             text = state.errorMessage ?: stringResource(id = R.string.unknown_error),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.error
                         )
                     }
                 }
@@ -1481,21 +1340,14 @@ private fun FullUpdateProgressDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     if (showCancel) {
-                        TextButton(onClick = onCancel) {
-                            Text(stringResource(id = R.string.cancel))
-                        }
+                        TextButton(text = stringResource(id = R.string.cancel), onClick = onCancel)
                     } else if (isError) {
-                        TextButton(onClick = onCancel) {
-                            Text(stringResource(id = R.string.close))
-                        }
+                        TextButton(text = stringResource(id = R.string.close), onClick = onCancel)
                     }
                 }
             }
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadSourceDialog(
     updateStatus: UpdateStatus,
@@ -1596,8 +1448,8 @@ fun DownloadSourceDialog(
                 if (desc != null) {
                     Text(
                         text = desc,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MiuixTheme.textStyles.body2,
+                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1605,7 +1457,7 @@ fun DownloadSourceDialog(
             }
             Spacer(modifier = Modifier.width(10.dp))
             if (probe == null && probeUrls.isNotEmpty()) {
-                CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(16.dp))
+                CircularProgressIndicator(strokeWidth = 2.dp, size = 16.dp)
             } else if (probe != null) {
                 val text = if (probe.ok) {
                     probe.latencyMs?.let { "${it}ms" } ?: "ok"
@@ -1614,11 +1466,11 @@ fun DownloadSourceDialog(
                 }
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MiuixTheme.textStyles.footnote2,
                     color = if (probe.ok) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MiuixTheme.colorScheme.onSurfaceVariantSummary
                     } else {
-                        MaterialTheme.colorScheme.error
+                        MiuixTheme.colorScheme.error
                     },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -1629,14 +1481,19 @@ fun DownloadSourceDialog(
         }
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(id = R.string.select_download_source)) },
-        text = {
-            Column {
+    OperitDialog(
+        show = true,
+        title = stringResource(id = R.string.select_download_source),
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.auto_select),
+        onConfirm = { autoSelect() },
+        confirmEnabled = autoEnabled,
+        dismissText = stringResource(id = R.string.cancel),
+    ) {
+        Column {
                 Text(
                     stringResource(id = R.string.select_download_source_desc),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MiuixTheme.textStyles.body1,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 LazyColumn {
@@ -1656,26 +1513,9 @@ fun DownloadSourceDialog(
                     }
                 }
             }
-        },
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(id = R.string.cancel))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { autoSelect() }, enabled = autoEnabled) {
-                    Text(stringResource(id = R.string.auto_select))
-                }
-            }
-        }
-    )
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatchDownloadSourceDialog(
     patchUrl: String,
@@ -1785,8 +1625,8 @@ fun PatchDownloadSourceDialog(
                 if (desc != null) {
                     Text(
                         text = desc,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MiuixTheme.textStyles.body2,
+                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1794,7 +1634,7 @@ fun PatchDownloadSourceDialog(
             }
             Spacer(modifier = Modifier.width(10.dp))
             if (summary == null && keys.isNotEmpty()) {
-                CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(16.dp))
+                CircularProgressIndicator(strokeWidth = 2.dp, size = 16.dp)
             } else if (summary != null) {
                 val text = if (summary.ok) {
                     summary.latencyMs?.let { "${it}ms" } ?: "ok"
@@ -1803,11 +1643,11 @@ fun PatchDownloadSourceDialog(
                 }
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MiuixTheme.textStyles.footnote2,
                     color = if (summary.ok) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MiuixTheme.colorScheme.onSurfaceVariantSummary
                     } else {
-                        MaterialTheme.colorScheme.error
+                        MiuixTheme.colorScheme.error
                     },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -1818,14 +1658,19 @@ fun PatchDownloadSourceDialog(
         }
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(id = R.string.select_download_source)) },
-        text = {
-            Column {
+    OperitDialog(
+        show = true,
+        title = stringResource(id = R.string.select_download_source),
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.auto_select),
+        onConfirm = { autoSelect() },
+        confirmEnabled = autoEnabled,
+        dismissText = stringResource(id = R.string.cancel),
+    ) {
+        Column {
                 Text(
                     stringResource(id = R.string.patch_update_desc),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MiuixTheme.textStyles.body1,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 LazyColumn {
@@ -1856,21 +1701,5 @@ fun PatchDownloadSourceDialog(
                     }
                 }
             }
-        },
-        confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(id = R.string.cancel))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { autoSelect() }, enabled = autoEnabled) {
-                    Text(stringResource(id = R.string.auto_select))
-                }
-            }
-        }
-    )
+    }
 }
