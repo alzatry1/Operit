@@ -488,6 +488,8 @@ android {
         compose = true
         aidl = true
         buildConfig = true
+        // AGP 9：buildTypes 中的 resValue（app_name 覆盖）需显式开启
+        resValues = true
     }
     packaging {
         
