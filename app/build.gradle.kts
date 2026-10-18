@@ -855,4 +855,6 @@ dependencies {
     implementation(libs.miuix.preference)
     implementation(libs.miuix.icons)
     implementation(libs.miuix.blur)
+    // materialkolor 是 miuix 的 runtime 依赖（不在编译类路径）；主题解析器的 Monet 直算需要它
+    implementation("com.materialkolor:material-color-utilities-android:5.0.1")
 }

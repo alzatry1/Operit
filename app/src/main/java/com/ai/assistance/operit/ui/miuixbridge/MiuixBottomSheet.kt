@@ -1,6 +1,5 @@
 package com.ai.assistance.operit.ui.miuixbridge
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import top.yukonga.miuix.kmp.overlay.OverlayBottomSheet
@@ -16,7 +15,7 @@ fun OperitBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     title: String? = null,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     OverlayBottomSheet(
         show = show,

@@ -44,11 +44,12 @@ fun resolveThemeColorScheme(
             snapshot.themeMode == UserPreferencesManager.THEME_MODE_DARK
         }
 
+    val customPrimaryArgb = snapshot.customPrimaryColor
     val scheme =
         when {
             // 1. 自定义主色 → Monet 种子（与运行时同一引擎）
-            snapshot.useCustomColors && snapshot.customPrimaryColor != null ->
-                monetM3ColorScheme(snapshot.customPrimaryColor, darkTheme)
+            snapshot.useCustomColors && customPrimaryArgb != null ->
+                monetM3ColorScheme(customPrimaryArgb, darkTheme)
             // 2. 系统动态取色（API 31+）：先按 miuix 同款方式读系统 overlay 种子
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                 readSystemPaletteSeedArgb(context)?.let { seedArgb ->
