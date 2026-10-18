@@ -44,3 +44,4 @@ status: in_progress
 
 - [DONE] 01 CI 准备
 - [DONE] 02 工具链升级
+- [DONE] 03 主题桥接与示范页
