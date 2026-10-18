@@ -40,6 +40,7 @@ coil = "2.5.0"
 jlatexmath = "0.2.0"
 renderx = "1.0.0"
 kotlinx-serialization = "1.11.0"
+miuix = "0.9.4"
 uuid = "0.8.2"
 gson = "2.10.1"
 hjson = "3.0.0"
@@ -260,6 +261,12 @@ work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version
 # Glance (Compose for Widgets)
 glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
+
+# Miuix（HyperOS 风格组件库，KMP Android 坐标）
+miuix-ui = { group = "top.yukonga.miuix.kmp", name = "miuix-ui-android", version.ref = "miuix" }
+miuix-preference = { group = "top.yukonga.miuix.kmp", name = "miuix-preference-android", version.ref = "miuix" }
+miuix-icons = { group = "top.yukonga.miuix.kmp", name = "miuix-icons-android", version.ref = "miuix" }
+miuix-blur = { group = "top.yukonga.miuix.kmp", name = "miuix-blur-android", version.ref = "miuix" }
  androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
  androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
  androidx-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }

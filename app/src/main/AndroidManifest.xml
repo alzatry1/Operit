@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- miuix-blur 声明 minSdk 33（RuntimeShader 需要），应用 minSdk 26；
+         库内模糊能力在运行时由 isRuntimeShaderSupported() 门控，低版本安全降级为纯色。 -->
+    <uses-sdk tools:overrideLibrary="top.yukonga.miuix.kmp.blur" />
+
     <!-- Shizuku permissions -->
     <uses-feature
         android:name="android.hardware.telephony"

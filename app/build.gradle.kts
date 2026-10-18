@@ -849,4 +849,10 @@ dependencies {
     // Glance for Widgets (Compose for Widgets)
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
+
+    // Miuix 组件库（P1 仅引入依赖验证解析，UI 迁移自 P2 开始）
+    implementation(libs.miuix.ui)
+    implementation(libs.miuix.preference)
+    implementation(libs.miuix.icons)
+    implementation(libs.miuix.blur)
 }
