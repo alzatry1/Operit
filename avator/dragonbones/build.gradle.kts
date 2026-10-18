@@ -42,7 +42,8 @@ android {
     buildFeatures {
         compose = true
     }
-    sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml")
+    // 注：原有 sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml") 为冗余默认路径声明，
+    // 且该旧式访问器在 AGP 9 新 DSL 下会 ClassCastException，已移除（默认路径即此路径）。
 
     externalNativeBuild {
         cmake {
