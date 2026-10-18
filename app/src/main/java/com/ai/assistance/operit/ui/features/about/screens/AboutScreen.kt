@@ -1208,6 +1208,7 @@ private fun PatchUpdateProgressDialog(
                     }
                 }
             }
+    }
 }
 
 @Composable
@@ -1346,6 +1347,7 @@ private fun FullUpdateProgressDialog(
                     }
                 }
             }
+    }
 }
 
 @Composable
