@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 34
+        // AGP 9：library 模块的 defaultConfig 不再接受 targetSdk（仅应用模块保留）
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
