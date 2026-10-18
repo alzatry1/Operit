@@ -17,7 +17,8 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        // 原 consumerProguardFiles("consumer-rules.pro") 声明的文件从不存在，
+        // AGP 8 仅告警，AGP 9 直接构建失败；无规则可给，故移除声明。
 
         externalNativeBuild {
             cmake {
